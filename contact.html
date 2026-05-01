@@ -46,7 +46,7 @@
         <div class="contact-icon">📍</div>
         <div class="contact-item-text">
           <strong>Office Address</strong>
-          <span>207, 2nd Floor, Neelkanth Plaza, Plot No. 15 <br>Community Centre, Road No. 44, Pitam Pura <br>New Delhi, India</span>
+          <span>207, 2nd Floor, Neelkanth Plaza, Plot No. 15<br>Community Centre, Road No. 44, Pitam Pura<br>New Delhi, India</span>
         </div>
       </div>
 
@@ -87,32 +87,52 @@
       <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--navy);margin-bottom:0.5rem;">Send Us an Enquiry</h3>
       <p style="font-size:0.85rem;color:var(--txt-mute);margin-bottom:1.75rem;">Fields marked * are required.</p>
 
-      <form id="contactForm">
+      <!-- Success Message (hidden by default) -->
+      <div id="successMsg" style="display:none; background:#e8f7f5; border:1px solid rgba(15,157,142,0.3); border-radius:var(--radius-lg); padding:1.5rem; text-align:center; margin-bottom:1rem;">
+        <div style="font-size:2rem; margin-bottom:0.5rem;">✅</div>
+        <div style="font-weight:600; color:#085041; font-size:1rem; margin-bottom:0.25rem;">Enquiry Submitted Successfully!</div>
+        <div style="font-size:0.85rem; color:#0f6e56;">Thank you for reaching out. We will respond within 1–2 business days.</div>
+      </div>
+
+      <form id="contactForm" action="https://api.web3forms.com/submit" method="POST">
+
+        <!-- Web3Forms Access Key -->
+        <input type="hidden" name="access_key" value="ce2379a3-1a92-4510-821a-9a8179ef8c7c" />
+
+        <!-- Email Subject Line -->
+        <input type="hidden" name="subject" value="New Enquiry — DSD & Co. Website" />
+
+        <!-- Redirect OFF — stay on same page -->
+        <input type="hidden" name="redirect" value="false" />
+
+        <!-- Honeypot spam protection -->
+        <input type="checkbox" name="botcheck" style="display:none;" />
+
         <div class="form-row">
           <div class="form-group">
             <label>Full Name *</label>
-            <input type="text" placeholder="Your full name" required />
+            <input type="text" name="Full Name" placeholder="Your full name" required />
           </div>
           <div class="form-group">
             <label>Organisation</label>
-            <input type="text" placeholder="Company / Firm name" />
+            <input type="text" name="Organisation" placeholder="Company / Firm name" />
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label>Phone Number *</label>
-            <input type="tel" placeholder="+91 XXXXX XXXXX" required />
+            <input type="tel" name="Phone Number" placeholder="+91 XXXXX XXXXX" required />
           </div>
           <div class="form-group">
             <label>Email Address *</label>
-            <input type="email" placeholder="you@example.com" required />
+            <input type="email" name="email" placeholder="you@example.com" required />
           </div>
         </div>
 
         <div class="form-group">
           <label>Service of Interest *</label>
-          <select required>
+          <select name="Service of Interest" required>
             <option value="" disabled selected>Select a service</option>
             <option>Direct Taxation (Income Tax / TDS / Transfer Pricing)</option>
             <option>GST & Indirect Taxation</option>
@@ -127,14 +147,43 @@
 
         <div class="form-group">
           <label>Your Message *</label>
-          <textarea placeholder="Please briefly describe your requirement or query..." required></textarea>
+          <textarea name="Message" placeholder="Please briefly describe your requirement or query..." required></textarea>
         </div>
 
-        <button type="submit" class="btn-submit">Submit Enquiry</button>
+        <button type="submit" class="btn-submit" id="submitBtn"><span>Submit Enquiry</span></button>
         <p class="form-note" style="margin-top:1rem;">
           Your information is kept strictly confidential and will not be shared with any third party. We typically respond within 1–2 business days.
         </p>
       </form>
+
+      <script>
+        const form = document.getElementById('contactForm');
+        const btn  = document.getElementById('submitBtn');
+        const successMsg = document.getElementById('successMsg');
+        form.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          btn.innerHTML = '<span>Sending...</span>';
+          btn.disabled = true;
+          const data = new FormData(form);
+          const res  = await fetch('https://api.web3forms.com/submit', { method:'POST', body: data });
+          const json = await res.json();
+          if (json.success) {
+            form.reset();
+            successMsg.style.display = 'block';
+            btn.innerHTML = '<span>Submit Enquiry</span>';
+            btn.disabled = false;
+            successMsg.scrollIntoView({ behavior:'smooth', block:'center' });
+          } else {
+            btn.innerHTML = '<span>Error — Please Try Again</span>';
+            btn.style.background = '#a32d2d';
+            setTimeout(() => {
+              btn.innerHTML = '<span>Submit Enquiry</span>';
+              btn.style.background = '';
+              btn.disabled = false;
+            }, 3000);
+          }
+        });
+      </script>
     </div>
   </div>
 </section>
